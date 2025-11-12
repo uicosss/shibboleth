@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{ga}}
+    <title>Authentication</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        #wrapper{
+            min-height: 100%;
+            /* Make the wrapper relative positioning to make sure that it stays
+               Consistent with the Page
+            */
+            position: relative;
+        }
+        #content{
+            /* Padding bottom to make space for footer text*/
+            padding-bottom: 40px;
+        }
+        .header {
+            /*Header background color*/
+            background-color: #2C5581;
+        }
+        .content {
+            /*Content of header*/
+            max-width: 800px;
+            padding: 10px;
+            margin: auto;
+        }
+        .footer{
+            background-color: #ebebeb;
+            bottom: 0;
+            position: absolute;
+            width: 100%;
+        }
+
+        .logo {
+            background-image: url('data:image/png;base64,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');
+            background-position: 15px 0;
+            background-repeat: no-repeat;
+            background-size: 133px 97px;
+            height: 97px;
+            width: 148px;
+        }
+        th {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div id="wrapper">
+    <div class="header">
+        <div class="content">
+            <div class="logo"></div>
+        </div>
+    </div>
+    <div id="content" class="container">
+        <br/>
+        <div class="center">
+            <h1>Forbidden by Access Rights</h1>
+        </div>
+        <hr/>
+        <div class="center">
+            <p><h3>Sorry, you are not authorized to view this page.</h3></p>
+        </div>
+        <div class="center">
+            <p><h4>Please contact <a href="mailto:aes_webmaster@uic.edu">aes_webmaster@uic.edu</a> for authorization information.</h4></p>
+            <p><h3><a href="/Shibboleth.sso/Logout">Log out</a>.</h3></p>
+        </div>
+        <hr/>
+        <!-- Close content div -->
+    </div>
+    <!-- Open footer div -->
+    <div class="footer container">
+        <!-- Open content div-->
+        <div class="content">
+            <a href="https://osss.uic.edu" target="_blank">Office of Student System Services</a> -
+            <a href="mailto:aes_webmaster@uic.edu">aes_webmaster@uic.edu</a>
+            <!-- Close content div-->
+        </div>
+        <!-- Close foot div-->
+    </div>
+</div>
+</body>
+</html>
