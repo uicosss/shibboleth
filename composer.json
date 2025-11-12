@@ -1,0 +1,21 @@
+{
+    "name": "uicosss/shibboleth",
+    "version": "0.1.0",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Uicosss\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jeremy Jones",
+            "email": "jkjones3@uic.edu"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require-dev": {
+        "phpunit/phpunit": "^9.6"
+    }
+}
