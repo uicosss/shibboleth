@@ -1,7 +1,8 @@
 <?php
 
-namespace Uicosss;
+namespace Uicosss\Shibboleth;
 
+use DirectoryIterator;
 use stdClass;
 
 class Shibboleth
@@ -29,16 +30,6 @@ class Shibboleth
     private stdClass $attributes;
 
     /**
-     * @var string|null
-     */
-    private ?string $authorizationFileAdminContact = null;
-
-    /**
-     * @var bool|mixed
-     */
-    private bool $rerenderPageOnAuthIssue = false;
-
-    /**
      * @var mixed|null
      */
     private ?string $authorizationContext = null;
@@ -52,11 +43,6 @@ class Shibboleth
      * @var mixed|null
      */
     private $appState = null;
-
-    /**
-     * @var mixed|null
-     */
-    private ?string $googleAnalytics = null;
 
     /**
      * @param array $config
@@ -76,28 +62,8 @@ class Shibboleth
             $this->authorizationFile = dirname($this->authorizationContext) . '/' . self::ALLOWED_NETIDS_FILENAME;
         }
 
-        // If there is a "closer" authorization file, override and use that one instead
-        // Also last ditch effort in case $authorizationContext was empty
-        $backtrace = debug_backtrace();
-        if (!empty($backtrace[0]['file']) && is_readable(dirname($backtrace[0]['file']) . '/' . self::ALLOWED_NETIDS_FILENAME)) {
-            $this->authorizationFile = dirname($backtrace[0]['file']) . '/' . self::ALLOWED_NETIDS_FILENAME;
-        }
-
         $this->authenticated = $this->authenticate();
         $this->authorized = $this->authorize();
-        $this->authorizationFileAdminContact = $this->parseAuthorizationFileAdminContact();
-
-        if ($this->rerenderPageOnAuthIssue) {
-            if ($this->authenticated) {
-                if (!$this->authorized) {
-                    echo $this->forbiddenMarkup();
-                    die();
-                }
-            } else {
-                echo $this->authenticationMarkup();
-                die();
-            }
-        }
     }
 
     /**
@@ -106,11 +72,9 @@ class Shibboleth
      */
     private function setConfig(array $config = []): void
     {
-        $this->rerenderPageOnAuthIssue = $config['rerenderPageOnAuthIssue'] ?? false;
-        $this->authorizationContext = $config['authorizationContext'] ?? null;
-        $this->appDocumentRoot = $config['appDocumentRoot'] ?? null;
+        $this->authorizationContext = $config['authorizationContext'];
+        $this->appDocumentRoot = $config['appDocumentRoot'];
         $this->appState = $config['appState'] ?? null;
-        $this->googleAnalytics = $config['googleAnalytics'] ?? null;
     }
 
     /**
@@ -381,31 +345,6 @@ class Shibboleth
     }
 
     /**
-     * Parses out the administrator contact from an authorization file
-     *
-     * @return array|string|string[]|null
-     */
-    public function parseAuthorizationFileAdminContact()
-    {
-        if (empty($this->authorizationFile) || !is_readable($this->authorizationFile)) {
-            // Authorization file cannot be read, therefore user cannot be authorized
-            return null;
-        }
-
-        $authorizationFileContents = file_get_contents($this->authorizationFile);
-
-        preg_match_all('/<contact>(|[\S+\n\r\s]+)<a(|[\S+\n\r\s]+)href="(.*)"(|[\S+\n\r\s]+)>/mi', $authorizationFileContents, $contactOutput);
-
-        $mail = null;
-
-        if (!empty($contactOutput[3]) and !empty($contactOutput[3][0])) {
-            $mail = str_replace('mailto:', '', $contactOutput[3][0]);
-        }
-
-        return $mail;
-    }
-
-    /**
      * Cleans up a given line getting rid of comments and other problematic character sequences
      *
      * @param $line
@@ -424,54 +363,31 @@ class Shibboleth
 
     /**
      * Renders an HTML template informing the user they are forbidden to see any content.
+     *
+     * @param string $assetPath
+     * @return false|string
      */
-    public function forbiddenMarkup()
+    public function forbiddenMarkup(string $assetPath)
     {
-        return str_replace(
-            [
-                '{{ga}}',
-            ],
-            [
-                $this->buildGoogleAnalytics(),
-            ],
-            file_get_contents(__DIR__ . '/../assets/forbidden.html')
-        );
+        return file_get_contents($assetPath . '/forbidden.html');
     }
 
     /**
      * Renders an HTML template informing the user that they must authenticate before
      * seeing any content.
      *
+     * @param string $assetPath
      * @param string|null $hostname
      * @param string|null $page
      * @return array|false|string|string[]
      */
-    public function authenticationMarkup(string $hostname = null, string $page = null)
+    public function authenticationMarkup(string $assetPath, string $hostname = null, string $page = null)
     {
         $hostname = empty($hostname) ? $_SERVER['SERVER_NAME'] : $hostname;
         $page = empty($page) ? $_SERVER['PHP_SELF'] : $page;
+        $urlEncodedTarget = urlencode('https://' . $hostname . $page);
 
-        return str_replace(
-            [
-                '{{target}}',
-                '{{ga}}',
-            ],
-            [
-                urlencode('https://' . $hostname . $page),
-                $this->buildGoogleAnalytics(),
-            ],
-            file_get_contents(__DIR__ . '/../assets/authentication.html')
-        );
-    }
-
-    /**
-     * @return array|false|string|string[]|null
-     */
-    private function buildGoogleAnalytics()
-    {
-        return !empty($this->googleAnalytics)
-            ? str_replace('{{ga-key}}', $this->googleAnalytics, file_get_contents(__DIR__ . '/assets/google-analytics.html'))
-            : null;
+        return str_replace('{{target}}', $urlEncodedTarget, file_get_contents($assetPath . '/authentication.html'));
     }
 
     /**
@@ -480,5 +396,21 @@ class Shibboleth
     private function isLocalDev(): bool
     {
         return in_array(strtolower($this->appState), ['dev', 'local']);
+    }
+
+    /**
+     * Copies library assets into the full path provided.
+     *
+     * @param string $fullPath
+     * @return void
+     */
+    public static function deployAssets(string $fullPath)
+    {
+        $dir = new DirectoryIterator(dirname(__DIR__) . '/assets');
+        foreach ($dir as $file) {
+            if (!$file->isDot()) {
+                copy($file->getRealPath(), $fullPath . '/' . $file->getFilename());
+            }
+        }
     }
 }
