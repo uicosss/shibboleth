@@ -369,7 +369,7 @@ class Shibboleth
      * @param string $assetPath
      * @return false|string
      */
-    public function forbiddenMarkup(string $assetPath)
+    public static function forbiddenMarkup(string $assetPath)
     {
         return file_get_contents($assetPath . '/forbidden.html');
     }
@@ -383,7 +383,7 @@ class Shibboleth
      * @param string|null $page
      * @return array|false|string|string[]
      */
-    public function authenticationMarkup(string $assetPath, string $hostname = null, string $page = null)
+    public static function authenticationMarkup(string $assetPath, string $hostname = null, string $page = null)
     {
         $hostname = empty($hostname) ? $_SERVER['SERVER_NAME'] : $hostname;
         $page = empty($page) ? $_SERVER['PHP_SELF'] : $page;
