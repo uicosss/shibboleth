@@ -2,7 +2,9 @@
 
 namespace Uicosss\Shibboleth;
 
+use Composer\Script\Event;
 use DirectoryIterator;
+use PHPUnit\Util\Exception;
 use stdClass;
 
 class Shibboleth
@@ -401,11 +403,21 @@ class Shibboleth
     /**
      * Copies library assets into the full path provided.
      *
-     * @param string $fullPath
      * @return void
      */
-    public static function deployAssets(string $fullPath)
+    public static function deployAssets(Event $event)
     {
+        $arguments = $event->getArguments();
+        $fullPath = trim($arguments[0]);
+
+        if (substr($fullPath, -1) == '/') {
+            $fullPath = rtrim($fullPath, '/');
+        }
+
+        if (!is_writable($fullPath)) {
+            throw new Exception("Path: [$fullPath] is not writable");
+        }
+
         $dir = new DirectoryIterator(dirname(__DIR__) . '/assets');
         foreach ($dir as $file) {
             if (!$file->isDot()) {
