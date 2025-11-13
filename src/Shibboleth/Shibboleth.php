@@ -403,13 +403,11 @@ class Shibboleth
     /**
      * Copies library assets into the full path provided.
      *
+     * @param string $fullPath
      * @return void
      */
-    public static function deployAssets(Event $event)
+    public static function deployAssets(string $fullPath)
     {
-        $arguments = $event->getArguments();
-        $fullPath = trim($arguments[0]);
-
         if (substr($fullPath, -1) == '/') {
             $fullPath = rtrim($fullPath, '/');
         }
