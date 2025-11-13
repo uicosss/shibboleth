@@ -17,5 +17,8 @@
     "minimum-stability": "stable",
     "require-dev": {
         "phpunit/phpunit": "^9.6"
+    },
+    "scripts": {
+        "deploy-assets": "Uicosss\\Shibboleth\\Shibboleth::deployAssets"
     }
 }
