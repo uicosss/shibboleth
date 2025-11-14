@@ -2,9 +2,8 @@
 
 namespace Uicosss\Shibboleth;
 
-use Composer\Script\Event;
 use DirectoryIterator;
-use PHPUnit\Util\Exception;
+use Exception;
 use stdClass;
 
 class Shibboleth
@@ -34,11 +33,6 @@ class Shibboleth
     /**
      * @var mixed|null
      */
-    private ?string $authorizationContext = null;
-
-    /**
-     * @var mixed|null
-     */
     private $appDocumentRoot = null;
 
     /**
@@ -47,11 +41,12 @@ class Shibboleth
     private $appState = null;
 
     /**
-     * @param array $config
+     * @param string|null $authorizationContext
+     * @throws Exception
      */
-    public function __construct(array $config = [])
+    public function __construct(string $authorizationContext = null)
     {
-        $this->setConfig($config);
+        $this->setEnvConfig();
         $this->setAttributeValues();
 
         // Attempt to read the file from the document root
@@ -59,9 +54,9 @@ class Shibboleth
             $this->authorizationFile = $this->appDocumentRoot . '/' . self::ALLOWED_NETIDS_FILENAME;
         }
 
-        if (!is_null($this->authorizationContext) && is_readable(dirname($this->authorizationContext) . '/' . self::ALLOWED_NETIDS_FILENAME)) {
+        if (!is_null($authorizationContext) && is_readable(dirname($authorizationContext) . '/' . self::ALLOWED_NETIDS_FILENAME)) {
             // If there is a "closer" authorization file, override and use that one instead
-            $this->authorizationFile = dirname($this->authorizationContext) . '/' . self::ALLOWED_NETIDS_FILENAME;
+            $this->authorizationFile = dirname($authorizationContext) . '/' . self::ALLOWED_NETIDS_FILENAME;
         }
 
         $this->authenticated = $this->authenticate();
@@ -69,14 +64,17 @@ class Shibboleth
     }
 
     /**
-     * @param array $config
      * @return void
+     * @throws Exception
      */
-    private function setConfig(array $config = []): void
+    private function setEnvConfig(): void
     {
-        $this->authorizationContext = $config['authorizationContext'];
-        $this->appDocumentRoot = $config['appDocumentRoot'];
-        $this->appState = $config['appState'] ?? null;
+        if (empty($_ENV['APP_DOCUMENT_ROOT'])) {
+            throw new Exception('Env variable APP_DOCUMENT_ROOT cannot be empty');
+        }
+
+        $this->appDocumentRoot = trim($_ENV['APP_DOCUMENT_ROOT']);
+        $this->appState = isset($_ENV['APP_STATE']) ? trim($_ENV['APP_STATE']) : null;
     }
 
     /**
@@ -405,6 +403,7 @@ class Shibboleth
      *
      * @param string $fullPath
      * @return void
+     * @throws Exception
      */
     public static function deployAssets(string $fullPath)
     {

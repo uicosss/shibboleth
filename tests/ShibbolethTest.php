@@ -14,6 +14,8 @@ final class ShibbolethTest extends TestCase
     public function testNoServerVariablesIsUnauthenticated(): void
     {
         $_SERVER = null;
+        $_ENV = null;
+        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__;
         $Shibboleth = new Shibboleth();
         $this->assertFalse($Shibboleth->isAuthenticated());
     }
@@ -38,6 +40,9 @@ final class ShibbolethTest extends TestCase
         $_SERVER["displayName"] = 'First Last';
         $_SERVER["affiliation"] = 'member@uic.edu;staff@uic.edu';
         $_SERVER["AUTH_TYPE"] = 'shibboleth';
+
+        $_ENV = null;
+        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__;
 
         $Shibboleth = new Shibboleth();
         $this->assertTrue($Shibboleth->isAuthenticated());
@@ -64,6 +69,9 @@ final class ShibbolethTest extends TestCase
         $_SERVER["affiliation"] = 'member@uic.edu;staff@uic.edu';
         $_SERVER["AUTH_TYPE"] = 'shibboleth';
 
+        $_ENV = null;
+        $_ENV['APP_DOCUMENT_ROOT'] = '/tmp';
+
         $Shibboleth = new Shibboleth();
         $this->assertFalse($Shibboleth->isAuthorized());
     }
@@ -89,9 +97,10 @@ final class ShibbolethTest extends TestCase
         $_SERVER["affiliation"] = 'member@uic.edu;staff@uic.edu';
         $_SERVER["AUTH_TYPE"] = 'shibboleth';
 
-        $Shibboleth = new Shibboleth([
-            'appDocumentRoot' => __DIR__,
-        ]);
+        $_ENV = null;
+        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__;
+
+        $Shibboleth = new Shibboleth();
         $this->assertTrue($Shibboleth->isAuthorized());
     }
 
@@ -116,9 +125,10 @@ final class ShibbolethTest extends TestCase
         $_SERVER["affiliation"] = 'member@uic.edu;staff@uic.edu';
         $_SERVER["AUTH_TYPE"] = 'shibboleth';
 
-        $Shibboleth = new Shibboleth([
-            'appDocumentRoot' => __DIR__,
-        ]);
+        $_ENV = null;
+        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__;
+
+        $Shibboleth = new Shibboleth();
         $this->assertFalse($Shibboleth->isAuthorized());
     }
 }
