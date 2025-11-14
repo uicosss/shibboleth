@@ -416,7 +416,7 @@ class Shibboleth
             throw new Exception("Path: [$fullPath] is not writable");
         }
 
-        $dir = new DirectoryIterator(dirname(__DIR__) . '/assets');
+        $dir = new DirectoryIterator(dirname(__DIR__) . '/Shibboleth/assets');
         foreach ($dir as $file) {
             if (!$file->isDot()) {
                 copy($file->getRealPath(), $fullPath . '/' . $file->getFilename());
