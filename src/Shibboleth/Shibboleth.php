@@ -362,6 +362,23 @@ class Shibboleth
     }
 
     /**
+     * @param string $assetPath
+     * @return void
+     */
+    public function renderAuthIssues(string $assetPath)
+    {
+        if ($this->authenticated) {
+            if (!$this->authorized) {
+                echo self::forbiddenMarkup($assetPath);
+                die();
+            }
+        } else {
+            echo self::authenticationMarkup($assetPath);
+            die();
+        }
+    }
+
+    /**
      * Renders an HTML template informing the user they are forbidden to see any content.
      *
      * @param string $assetPath
