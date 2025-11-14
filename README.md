@@ -21,19 +21,15 @@ composer run-script deploy-assets -- /full/path/where/to/deploy/assets
 
 ### Config
 ```
-authorizationContext - Primary directory path, without trailing slash, to where to find an allowed.netids file.
-appDocumentRoot - [optional] Secondary directory path, without trailing slash, to where to find an allowed.netids file.
-appState - [optional] Current application state: local/dev/qa/prod. This is used to force Shib to auth in local environments.
+authorizationContext - Primary directory path, without trailing slash, to where to find an allowed.netids file. This is set on object instantiation.
+APP_DOCUMENT_ROOT - [optional] Secondary directory path, without trailing slash, to where to find an allowed.netids file. This must be set in the application's ENV variables.
+APP_STATE - [optional] Current application state: local/dev/qa/prod. This is used to force Shib to auth in local environments. This must be set in the application's ENV variables.
 ```
 
-### Instantiate an object of the class with array of config options set
+### Instantiate an object
+With or without authorizationContext as a parameter.
 ```
-$config = [
-    'authorizationContext' => '/path/to/file/dir',
-    'appDocumentRoot' => '/path/to/alt/file/dir',
-    'appState' => 'local',
-];
-$Shibboleth = new Uicosss\Shibboleth\Shibboleth($config);
+$Shibboleth = new Uicosss\Shibboleth\Shibboleth();
 ```
 
 ### Checking if authenticated
