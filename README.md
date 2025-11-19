@@ -13,9 +13,9 @@ require_once 'vendor/autoload.php';
 ```
 
 ### Deploy asset files
-This script will copy all the asset files to the full path provided. Can then modify these templates as desired. Along with copying the allowed.netids.example file where needed.
+This script will copy all the asset files to the full path provided. Can then modify these templates as desired. Along with copying the allowed.netids.example file where needed. File permissions may need to be adjusted to modify the deployed files. 
 ```
-composer run-script deploy-assets -- /full/path/where/to/deploy/assets
+php vendor/uicosss/shibboleth/scripts/deploy-assets.php /full/path/to/deploy/assets
 ```
 
 
