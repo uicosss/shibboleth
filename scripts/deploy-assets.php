@@ -16,7 +16,7 @@ try {
         throw new Exception("Asset path is not writable");
     }
 
-    $dir = new DirectoryIterator(dirname(__DIR__) . '/../src/Shibboleth/assets');
+    $dir = new DirectoryIterator(__DIR__ . '/../src/Shibboleth/assets');
     foreach ($dir as $file) {
         if (!$file->isDot()) {
             copy($file->getRealPath(), $assetPath . '/' . $file->getFilename());
