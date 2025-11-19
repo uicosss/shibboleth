@@ -414,29 +414,4 @@ class Shibboleth
     {
         return in_array(strtolower($this->appState), ['dev', 'local']);
     }
-
-    /**
-     * Copies library assets into the full path provided.
-     *
-     * @param string $fullPath
-     * @return void
-     * @throws Exception
-     */
-    public static function deployAssets(string $fullPath)
-    {
-        if (substr($fullPath, -1) == '/') {
-            $fullPath = rtrim($fullPath, '/');
-        }
-
-        if (!is_writable($fullPath)) {
-            throw new Exception("Path: [$fullPath] is not writable");
-        }
-
-        $dir = new DirectoryIterator(dirname(__DIR__) . '/Shibboleth/assets');
-        foreach ($dir as $file) {
-            if (!$file->isDot()) {
-                copy($file->getRealPath(), $fullPath . '/' . $file->getFilename());
-            }
-        }
-    }
 }
