@@ -19,17 +19,22 @@ php vendor/uicosss/shibboleth/scripts/deploy-assets.php /full/path/to/deploy/ass
 ```
 
 
-### Config
+### ENV Config
+These environment (`$_ENV`) variables must be set within the application using this package. 
 ```
-authorizationContext - Primary directory path, without trailing slash, to where to find an allowed.netids file. This is set on object instantiation.
-APP_DOCUMENT_ROOT - [optional] Secondary directory path, without trailing slash, to where to find an allowed.netids file. This must be set in the application's ENV variables.
-APP_STATE - [optional] Current application state: local/dev/qa/prod. This is used to force Shib to auth in local environments. This must be set in the application's ENV variables.
+APP_DOCUMENT_ROOT - e.g. APP_DOCUMENT_ROOT=/var/www/app/assets - Primary absolute directory path, without trailing slash, to where to find an allowed.netids file. This must be set in the application's ENV variables.
+APP_STATE - e.g. APP_STATE=LOCAL - [optional] Current application state: local/dev/qa/prod. This is used to force Shib to auth in local environments. This must be set in the application's ENV variables.
+WEBMASTER_EMAIL - [optional] An email address that will be displayed on auth issue pages.
+WEBMASTER_URL - [optional] Website that users will be linked to on auth issue pages.
+WEBMASTER_OFFICE_TITLE - [optional] Name of department or group that users will see on auth issue pages.
 ```
 
 ### Instantiate an object
-With or without authorizationContext as a parameter.
+With or without `$authorizationContext` as a parameter. `$authorizationContext` is an optional parameter that defines a secondary absolute directory path, without trailing slash, to where to find an allowed.netids file. This can be useful when different authorization is needed from the global `APP_DOCUMENT_ROOT` authorization file, for a specific part of the application. 
 ```
 $Shibboleth = new Uicosss\Shibboleth\Shibboleth();
+// or with $authorizationContext
+$Shibboleth = new Uicosss\Shibboleth\Shibboleth('/var/www/app/alt/assets');
 ```
 
 ### Checking if authenticated
@@ -48,6 +53,12 @@ if (!$Shibboleth->isAuthorized()) {
     $Shibboleth->forbiddenMarkup();
     die;
 }
+```
+
+### Rendering auth issues shortcut
+A built-in method can automatically handle authentication and authorization issues and render HTML markup. Pass an absolute path to the directory containing the HTML files either copied from the package or custom-made. The filenames should still match what is expected `authentication.html` and `forbidden.html`.
+```
+$Shibboleth->renderAuthIssues('/var/www/app/assets');
 ```
 
 ## Testing
