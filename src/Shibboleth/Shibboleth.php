@@ -382,11 +382,11 @@ class Shibboleth
      * Renders an HTML template informing the user they are forbidden to see any content.
      *
      * @param string $assetPath
-     * @return false|string
+     * @return array|string|string[]
      */
     public static function forbiddenMarkup(string $assetPath)
     {
-        return file_get_contents($assetPath . '/forbidden.html');
+        return self::renderTemplate(file_get_contents($assetPath . '/forbidden.html'));
     }
 
     /**
@@ -396,7 +396,7 @@ class Shibboleth
      * @param string $assetPath
      * @param string|null $hostname
      * @param string|null $page
-     * @return array|false|string|string[]
+     * @return array|string|string[]
      */
     public static function authenticationMarkup(string $assetPath, string $hostname = null, string $page = null)
     {
@@ -404,7 +404,34 @@ class Shibboleth
         $page = empty($page) ? $_SERVER['PHP_SELF'] : $page;
         $urlEncodedTarget = urlencode('https://' . $hostname . $page);
 
-        return str_replace('{{target}}', $urlEncodedTarget, file_get_contents($assetPath . '/authentication.html'));
+        return self::renderTemplate(file_get_contents($assetPath . '/authentication.html'), ['target' => $urlEncodedTarget]);
+    }
+
+    /**
+     * @param string $template
+     * @param array $customSearchReplace
+     * @return array|string|string[]
+     */
+    public static function renderTemplate(string $template, array $customSearchReplace = [])
+    {
+        $search = [];
+        $replace = [];
+
+        foreach ($customSearchReplace as $key => $val) {
+            $search[] = '{{' . $key . '}}';
+            $replace[] = $val;
+        }
+
+        $search[] = '{{help_email}}';
+        $replace[] = !empty($_ENV['WEBMASTER_EMAIL']) ? trim($_ENV['WEBMASTER_EMAIL']) : 'osss@uic.edu';
+
+        $search[] = '{{help_url}}';
+        $replace[] = !empty($_ENV['WEBMASTER_URL']) ? trim($_ENV['WEBMASTER_URL']) : 'https://osss.uic.edu';
+
+        $search[] = '{{help_office_title}}';
+        $replace[] = !empty($_ENV['WEBMASTER_OFFICE_TITLE']) ? trim($_ENV['WEBMASTER_OFFICE_TITLE']) : 'Office of Student System Services';
+
+        return str_replace($search, $replace, $template);
     }
 
     /**

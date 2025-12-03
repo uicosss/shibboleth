@@ -15,7 +15,7 @@ final class ShibbolethTest extends TestCase
     {
         $_SERVER = null;
         $_ENV = null;
-        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__;
+        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__ . '/Fixtures';
         $Shibboleth = new Shibboleth();
         $this->assertFalse($Shibboleth->isAuthenticated());
     }
@@ -42,7 +42,7 @@ final class ShibbolethTest extends TestCase
         $_SERVER["AUTH_TYPE"] = 'shibboleth';
 
         $_ENV = null;
-        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__;
+        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__ . '/Fixtures';
 
         $Shibboleth = new Shibboleth();
         $this->assertTrue($Shibboleth->isAuthenticated());
@@ -98,7 +98,7 @@ final class ShibbolethTest extends TestCase
         $_SERVER["AUTH_TYPE"] = 'shibboleth';
 
         $_ENV = null;
-        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__;
+        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__ . '/Fixtures';
 
         $Shibboleth = new Shibboleth();
         $this->assertTrue($Shibboleth->isAuthorized());
@@ -126,7 +126,7 @@ final class ShibbolethTest extends TestCase
         $_SERVER["AUTH_TYPE"] = 'shibboleth';
 
         $_ENV = null;
-        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__;
+        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__ . '/Fixtures';
 
         $Shibboleth = new Shibboleth();
         $this->assertFalse($Shibboleth->isAuthorized());
