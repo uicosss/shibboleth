@@ -2,7 +2,6 @@
 
 namespace Uicosss\Shibboleth;
 
-use DirectoryIterator;
 use Exception;
 use stdClass;
 
@@ -178,7 +177,7 @@ class Shibboleth
         }
 
         if (empty($this->authorizationFile) || !is_readable($this->authorizationFile)) {
-            // Authorization file cannot be read, therefore user cannot be authorized
+            // Authorization file cannot be read, therefore, user cannot be authorized
             return false;
         }
 
@@ -186,7 +185,7 @@ class Shibboleth
         $authorizationFileContents = file_get_contents($this->authorizationFile);
 
         // Determine which <allow *> are being used
-        preg_match_all('/<allow (ip|NetIDs|groups)>/mi', $authorizationFileContents, $foundAllowArray);
+        preg_match_all('/<allow (ip|NetIDs|groups)>/mi', $authorizationFileContents);
 
         $structuredAuthorizationList = [
             'ip' => [],
@@ -198,7 +197,6 @@ class Shibboleth
         $trackingNetIDs = false;
         $trackingGroups = false;
 
-        // Sequentially process File
         foreach (preg_split("/((\r?\n)|(\r\n?))/", $authorizationFileContents) as $line) {
             if (empty($line)) {
                 continue;
@@ -215,7 +213,7 @@ class Shibboleth
             }
 
             if ($trackingIPs) {
-                if (empty($line) or substr($line, 0, 1) == '<') {
+                if (substr($line, 0, 1) == '<') {
                     $trackingIPs = false;
                 } else {
                     $structuredAuthorizationList['ip'][] = $this->cleanAccessListLine($line);
@@ -229,7 +227,7 @@ class Shibboleth
             }
 
             if ($trackingNetIDs) {
-                if (empty($line) or substr($line, 0, 1) == '<') {
+                if (substr($line, 0, 1) == '<') {
                     $trackingNetIDs = false;
                 } else {
                     $structuredAuthorizationList['netids'][] = $this->cleanAccessListLine($line);
@@ -243,7 +241,7 @@ class Shibboleth
             }
 
             if ($trackingGroups) {
-                if (empty($line) or substr($line, 0, 1) == '<') {
+                if (substr($line, 0, 1) == '<') {
                     $trackingGroups = false;
                 } else {
                     $structuredAuthorizationList['groups'][] = $this->cleanAccessListLine($line);
@@ -364,6 +362,7 @@ class Shibboleth
     /**
      * @param string $assetPath
      * @return void
+     * @throws Exception
      */
     public function renderAuthIssues(string $assetPath)
     {
@@ -383,6 +382,7 @@ class Shibboleth
      *
      * @param string $assetPath
      * @return array|string|string[]
+     * @throws Exception
      */
     public static function forbiddenMarkup(string $assetPath)
     {
@@ -397,6 +397,7 @@ class Shibboleth
      * @param string|null $hostname
      * @param string|null $page
      * @return array|string|string[]
+     * @throws Exception
      */
     public static function authenticationMarkup(string $assetPath, string $hostname = null, string $page = null)
     {
@@ -411,9 +412,20 @@ class Shibboleth
      * @param string $template
      * @param array $customSearchReplace
      * @return array|string|string[]
+     * @throws Exception
      */
     public static function renderTemplate(string $template, array $customSearchReplace = [])
     {
+        if (empty($_ENV['WEBMASTER_EMAIL'])) {
+            throw new Exception('Env variable WEBMASTER_EMAIL cannot be empty');
+        }
+        if (empty($_ENV['WEBMASTER_URL'])) {
+            throw new Exception('Env variable WEBMASTER_URL cannot be empty');
+        }
+        if (empty($_ENV['WEBMASTER_OFFICE_TITLE'])) {
+            throw new Exception('Env variable WEBMASTER_OFFICE_TITLE cannot be empty');
+        }
+
         $search = [];
         $replace = [];
 
@@ -423,13 +435,13 @@ class Shibboleth
         }
 
         $search[] = '{{help_email}}';
-        $replace[] = !empty($_ENV['WEBMASTER_EMAIL']) ? trim($_ENV['WEBMASTER_EMAIL']) : 'osss@uic.edu';
+        $replace[] = trim($_ENV['WEBMASTER_EMAIL']);
 
         $search[] = '{{help_url}}';
-        $replace[] = !empty($_ENV['WEBMASTER_URL']) ? trim($_ENV['WEBMASTER_URL']) : 'https://osss.uic.edu';
+        $replace[] = trim($_ENV['WEBMASTER_URL']);
 
         $search[] = '{{help_office_title}}';
-        $replace[] = !empty($_ENV['WEBMASTER_OFFICE_TITLE']) ? trim($_ENV['WEBMASTER_OFFICE_TITLE']) : 'Office of Student System Services';
+        $replace[] = trim($_ENV['WEBMASTER_OFFICE_TITLE']);
 
         return str_replace($search, $replace, $template);
     }

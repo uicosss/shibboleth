@@ -24,9 +24,9 @@ These environment (`$_ENV`) variables must be set within the application using t
 ```
 APP_DOCUMENT_ROOT - e.g. APP_DOCUMENT_ROOT=/var/www/app/assets - Primary absolute directory path, without trailing slash, to where to find an allowed.netids file. This must be set in the application's ENV variables.
 APP_STATE - e.g. APP_STATE=LOCAL - [optional] Current application state: local/dev/qa/prod. This is used to force Shib to auth in local environments. This must be set in the application's ENV variables.
-WEBMASTER_EMAIL - [optional] An email address that will be displayed on auth issue pages.
-WEBMASTER_URL - [optional] Website that users will be linked to on auth issue pages.
-WEBMASTER_OFFICE_TITLE - [optional] Name of department or group that users will see on auth issue pages.
+WEBMASTER_EMAIL - An email address that will be displayed on auth issue pages.
+WEBMASTER_URL - Website that users will be linked to on auth issue pages.
+WEBMASTER_OFFICE_TITLE - Name of department or group that users will see on auth issue pages.
 ```
 
 ### Instantiate an object
