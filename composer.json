@@ -1,6 +1,5 @@
 {
     "name": "uicosss/shibboleth",
-    "version": "0.1.0",
     "type": "library",
     "license": "MIT",
     "autoload": {
