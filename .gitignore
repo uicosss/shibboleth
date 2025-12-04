@@ -1,0 +1,8 @@
+.env
+.idea
+composer.lock
+docker-compose.yml
+app.dockerfile
+/vendor/
+.phpunit.cache
+test.php

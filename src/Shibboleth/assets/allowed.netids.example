@@ -1,0 +1,21 @@
+#Comments start with a # sign.  I love comments.
+<contact>
+<a href="mailto:change_me@uic.edu">change_me@uic.edu</a>
+
+#
+# One or all <allow *> declarations can be present
+#
+
+#
+# Declarations are processed from least to most strict (groups, then IP, then NetIDs)
+#
+
+<allow groups>
+all
+
+# IP address can't match in the middle, must be beginning pattern.
+#<allow ip>
+128.248.*
+
+<allow NetIDs>
+dpaz
