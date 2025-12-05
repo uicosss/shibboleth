@@ -402,7 +402,7 @@ class Shibboleth
     public static function authenticationMarkup(string $assetPath, string $hostname = null, string $page = null)
     {
         $hostname = empty($hostname) ? $_SERVER['SERVER_NAME'] : $hostname;
-        $page = empty($page) ? $_SERVER['PHP_SELF'] : $page;
+        $page = empty($page) ? $_SERVER['REQUEST_URI'] : $page;
         $urlEncodedTarget = urlencode('https://' . $hostname . $page);
 
         return self::renderTemplate(file_get_contents($assetPath . '/authentication.html'), ['target' => $urlEncodedTarget]);
