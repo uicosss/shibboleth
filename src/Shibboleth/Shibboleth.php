@@ -48,18 +48,43 @@ class Shibboleth
         $this->setEnvConfig();
         $this->setAttributeValues();
 
-        // Attempt to read the file from the document root
         if (is_readable($this->appDocumentRoot . '/' . self::ALLOWED_NETIDS_FILENAME)) {
             $this->authorizationFile = $this->appDocumentRoot . '/' . self::ALLOWED_NETIDS_FILENAME;
         }
 
-        if (!is_null($authorizationContext) && is_readable(dirname($authorizationContext) . '/' . self::ALLOWED_NETIDS_FILENAME)) {
-            // If there is a "closer" authorization file, override and use that one instead
-            $this->authorizationFile = dirname($authorizationContext) . '/' . self::ALLOWED_NETIDS_FILENAME;
+        if (!is_null($authorizationContext)) {
+            $this->authorizationFile = $this->findAuthorizationFile($authorizationContext);
         }
 
         $this->authenticated = $this->authenticate();
         $this->authorized = $this->authorize();
+    }
+
+    /**
+     * Search given directory, and a maximum up two parent directories to find allowed.netids.
+     * It will also not search the root directory.
+     *
+     * @param $dir
+     * @return string|null
+     */
+    private function findAuthorizationFile($dir): ?string
+    {
+        $currentDir = $dir;
+
+        if (is_readable($currentDir . '/' . self::ALLOWED_NETIDS_FILENAME)) {
+            return $currentDir . '/' . self::ALLOWED_NETIDS_FILENAME;
+        }
+
+        $iterations = 0;
+        while (dirname($currentDir) !== $currentDir && ++$iterations <= 2 && dirname($currentDir) != '/') {
+            if (is_readable(dirname($currentDir) . '/' . self::ALLOWED_NETIDS_FILENAME)) {
+                return dirname($currentDir) . '/' . self::ALLOWED_NETIDS_FILENAME;
+            } else {
+                $currentDir = dirname($currentDir);
+            }
+        }
+
+        return null;
     }
 
     /**
