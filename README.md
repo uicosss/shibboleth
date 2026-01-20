@@ -66,3 +66,7 @@ You can run the unit tests by executing this command from the project root.
 ```
 ./vendor/bin/phpunit --colors --verbose
 ```
+To only execute one of the tests add this to the command
+```
+./vendor/bin/phpunit --colors --verbose --filter testMethodName
+```
