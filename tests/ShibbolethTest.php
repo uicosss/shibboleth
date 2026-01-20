@@ -131,4 +131,43 @@ final class ShibbolethTest extends TestCase
         $Shibboleth = new Shibboleth();
         $this->assertFalse($Shibboleth->isAuthorized());
     }
+
+    /**
+     * @covers Uicosss\Shibboleth\Shibboleth
+     * @return void
+     */
+    public function testShibAttributesHasAllExpectedValues(): void
+    {
+        $_SERVER = null;
+        $_SERVER["uid"] = 'testuid';
+        $_SERVER["title"] = 'Test Employee';
+        $_SERVER["sn"] = 'Last';
+        $_SERVER["primary-affiliation"] = 'staff';
+        $_SERVER["ou"] = 'Student Systems Services, Office of';
+        $_SERVER["mail"] = 'testuid@uic.edu';
+        $_SERVER["iTrustUIN"] = '999999999';
+        $_SERVER["iTrustSuppress"] = false;
+        $_SERVER["givenName"] = 'First';
+        $_SERVER["eppn"] = 'testuid@uic.edu';
+        $_SERVER["displayName"] = 'First Last';
+        $_SERVER["affiliation"] = 'member@uic.edu;staff@uic.edu';
+        $_SERVER["AUTH_TYPE"] = 'shibboleth';
+
+        $_ENV = null;
+        $_ENV['APP_DOCUMENT_ROOT'] = __DIR__ . '/Fixtures';
+
+        $Shibboleth = new Shibboleth();
+        $this->assertObjectHasProperty('uid', $Shibboleth->getAttributes());
+        $this->assertObjectHasProperty('title', $Shibboleth->getAttributes());
+        $this->assertObjectHasProperty('sn', $Shibboleth->getAttributes());
+        $this->assertObjectHasProperty('primary-affiliation', $Shibboleth->getAttributes());
+        $this->assertObjectHasProperty('ou', $Shibboleth->getAttributes());
+        $this->assertObjectHasProperty('mail', $Shibboleth->getAttributes());
+        $this->assertObjectHasProperty('iTrustUIN', $Shibboleth->getAttributes());
+        $this->assertObjectHasProperty('iTrustSuppress', $Shibboleth->getAttributes());
+        $this->assertObjectHasProperty('givenName', $Shibboleth->getAttributes());
+        $this->assertObjectHasProperty('eppn', $Shibboleth->getAttributes());
+        $this->assertObjectHasProperty('displayName', $Shibboleth->getAttributes());
+        $this->assertObjectHasProperty('affiliation', $Shibboleth->getAttributes());
+    }
 }

@@ -119,12 +119,14 @@ class Shibboleth
             'iTrustSuppress',       // oid:1.3.6.1.4.1.11483.101.3 - iTrustSuppress
             'givenName',            // oid:2.5.4.42 - givenName
             'eppn',                 // oid:1.3.6.1.4.1.5923.1.1.1.6 - eppn
+            'sn',                   // - sn
             'displayName',          // oid:2.16.840.1.113730.3.1.241  - displayName
+            'affiliation',          // - affiliation
             'unscoped-affiliation'  // oid:1.3.6.1.4.1.5923.1.1.1.1 - eduPersonAffiliation
         ];
 
         foreach ($potentialAttributes as $key => $attribute) {
-            if (empty($_SERVER[$attribute])) {
+            if (!isset($_SERVER[$attribute])) {
                 unset($potentialAttributes[$key]);
             }
         }
@@ -142,7 +144,7 @@ class Shibboleth
         $values = new stdClass();
 
         foreach ($this->passedAttributes() as $attribute) {
-            if (!empty($_SERVER[$attribute])) {
+            if (isset($_SERVER[$attribute])) {
                 $values->{$attribute} = $_SERVER[$attribute];
             }
         }
