@@ -9,6 +9,19 @@
             padding: 0;
             height: 100%;
         }
+        a, a:hover, a:visited {
+            color: #001E62;
+            text-decoration: underline;
+        }
+        a:hover {
+            text-decoration-color: #D50032;
+        }
+        .btn {
+            text-decoration: none;
+        }
+        .btn-primary {
+            background-color: #001E62;
+        }
         #wrapper{
             min-height: 100%;
             /* Make the wrapper relative positioning to make sure that it stays
@@ -22,7 +35,7 @@
         }
         .header {
             /*Header background color*/
-            background-color: #2C5581;
+            background-color: #001E62;
         }
         .content {
             /*Content of header*/
@@ -68,7 +81,7 @@
         </div>
         <div class="center">
             <p>Please contact <a href="mailto:{{help_email}}">{{help_email}}</a> for authorization information.</p>
-            <p><a href="/Shibboleth.sso/Logout">Log out</a>.</p>
+            <p><a href="/Shibboleth.sso/Logout" class="btn btn-primary">Log out</a>.</p>
         </div>
         <hr/>
         <!-- Close content div -->

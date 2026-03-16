@@ -387,11 +387,11 @@ class Shibboleth
     }
 
     /**
-     * @param string $assetPath
+     * @param string|null $assetPath
      * @return void
      * @throws Exception
      */
-    public function renderAuthIssues(string $assetPath)
+    public function renderAuthIssues(string $assetPath = null)
     {
         if ($this->authenticated) {
             if (!$this->authorized) {
@@ -407,32 +407,42 @@ class Shibboleth
     /**
      * Renders an HTML template informing the user they are forbidden to see any content.
      *
-     * @param string $assetPath
+     * @param string|null $assetPath
      * @return array|string|string[]
      * @throws Exception
      */
-    public static function forbiddenMarkup(string $assetPath)
+    public static function forbiddenMarkup(string $assetPath = null)
     {
-        return self::renderTemplate(file_get_contents($assetPath . '/forbidden.html'));
+        $asset = $assetPath !== null
+            ? (!str_ends_with($assetPath, '/') ? $assetPath . '/' : $assetPath) . 'forbidden.html'
+            : __DIR__ . '/assets/forbidden.html';
+
+        return self::renderTemplate(file_get_contents($asset));
     }
 
     /**
      * Renders an HTML template informing the user that they must authenticate before
      * seeing any content.
      *
-     * @param string $assetPath
+     * @param string|null $assetPath
      * @param string|null $hostname
      * @param string|null $page
      * @return array|string|string[]
      * @throws Exception
      */
-    public static function authenticationMarkup(string $assetPath, string $hostname = null, string $page = null)
+    public static function authenticationMarkup(string $assetPath = null, string $hostname = null, string $page = null)
     {
         $hostname = empty($hostname) ? $_SERVER['SERVER_NAME'] : $hostname;
         $page = empty($page) ? $_SERVER['REQUEST_URI'] : $page;
         $urlEncodedTarget = urlencode('https://' . $hostname . $page);
 
-        return self::renderTemplate(file_get_contents($assetPath . '/authentication.html'), ['target' => $urlEncodedTarget]);
+        $asset = $assetPath !== null
+            ? (!str_ends_with($assetPath, '/') ? $assetPath . '/' : $assetPath) . 'authentication.html'
+            : __DIR__ . '/assets/authentication.html';
+
+        return self::renderTemplate(file_get_contents($asset), [
+            'target' => $urlEncodedTarget
+        ]);
     }
 
     /**
