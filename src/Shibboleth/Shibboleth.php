@@ -387,11 +387,11 @@ class Shibboleth
     }
 
     /**
-     * @param string $assetPath
+     * @param string|null $assetPath
      * @return void
      * @throws Exception
      */
-    public function renderAuthIssues(string $assetPath)
+    public function renderAuthIssues(string $assetPath = null)
     {
         if ($this->authenticated) {
             if (!$this->authorized) {
