@@ -413,7 +413,11 @@ class Shibboleth
      */
     public static function forbiddenMarkup(string $assetPath = null)
     {
-        return self::renderTemplate(file_get_contents($assetPath !== null ? $assetPath : __DIR__ . '/assets/forbidden.html'));
+        $asset = $assetPath !== null
+            ? (!str_ends_with($assetPath, '/') ? $assetPath . '/' : $assetPath) . 'forbidden.html'
+            : __DIR__ . '/assets/forbidden.html';
+
+        return self::renderTemplate(file_get_contents($asset));
     }
 
     /**
@@ -432,7 +436,11 @@ class Shibboleth
         $page = empty($page) ? $_SERVER['REQUEST_URI'] : $page;
         $urlEncodedTarget = urlencode('https://' . $hostname . $page);
 
-        return self::renderTemplate(file_get_contents($assetPath !== null ? $assetPath : __DIR__ . '/assets/authentication.html'), [
+        $asset = $assetPath !== null
+            ? (!str_ends_with($assetPath, '/') ? $assetPath . '/' : $assetPath) . 'authentication.html'
+            : __DIR__ . '/assets/authentication.html';
+
+        return self::renderTemplate(file_get_contents($asset), [
             'target' => $urlEncodedTarget
         ]);
     }
