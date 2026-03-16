@@ -407,32 +407,34 @@ class Shibboleth
     /**
      * Renders an HTML template informing the user they are forbidden to see any content.
      *
-     * @param string $assetPath
+     * @param string|null $assetPath
      * @return array|string|string[]
      * @throws Exception
      */
-    public static function forbiddenMarkup(string $assetPath)
+    public static function forbiddenMarkup(string $assetPath = null)
     {
-        return self::renderTemplate(file_get_contents($assetPath . '/forbidden.html'));
+        return self::renderTemplate(file_get_contents($assetPath !== null ? $assetPath : __DIR__ . '/assets/forbidden.html'));
     }
 
     /**
      * Renders an HTML template informing the user that they must authenticate before
      * seeing any content.
      *
-     * @param string $assetPath
+     * @param string|null $assetPath
      * @param string|null $hostname
      * @param string|null $page
      * @return array|string|string[]
      * @throws Exception
      */
-    public static function authenticationMarkup(string $assetPath, string $hostname = null, string $page = null)
+    public static function authenticationMarkup(string $assetPath = null, string $hostname = null, string $page = null)
     {
         $hostname = empty($hostname) ? $_SERVER['SERVER_NAME'] : $hostname;
         $page = empty($page) ? $_SERVER['REQUEST_URI'] : $page;
         $urlEncodedTarget = urlencode('https://' . $hostname . $page);
 
-        return self::renderTemplate(file_get_contents($assetPath . '/authentication.html'), ['target' => $urlEncodedTarget]);
+        return self::renderTemplate(file_get_contents($assetPath !== null ? $assetPath : __DIR__ . '/assets/authentication.html'), [
+            'target' => $urlEncodedTarget
+        ]);
     }
 
     /**
